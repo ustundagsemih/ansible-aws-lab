@@ -35,6 +35,19 @@ resource "aws_instance" "ansible-nodes" {
   key_name      = aws_key_pair.ansible-lab-key-pair.key_name
   count         = 3
 
+  connection {
+    host        = self.public_ip
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = file("keys/terraform-key-pair")
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo dnf install python3"
+    ]
+  }
+
   tags = {
     count       = 3
     Name        = var.ansible_nodes_name[count.index]
